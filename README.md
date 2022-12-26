@@ -22,6 +22,8 @@ A NodeJS app which provides series of handy tools developed with love by Unknown
 
 -> If you do want to change the execution policy, I'd recommended [this article](https://techdirectarchive.com/2020/02/04/how-to-set-execution-policy/) to learn more.
 
+- Ensure that the names of the files you are using are not too long. There is a character limit for Windows file paths, so if certain scripts don't run, consider decreasing the number of characters in the file path.
+
 ## Dev Resources
 
 - [Auto PY to EXE](https://pypi.org/project/auto-py-to-exe/)
