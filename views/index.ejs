@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="../images/favicon.png">
+    <title>U68D Local Tools</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+    <script type="text/javascript">
+        var app = angular.module('myApp', []);
+    </script>
+
+    <script>// (A) SMOOTH SCROLL TO TOP
+        function totop() {
+            window.scroll({
+                top: 0, left: 0, behavior: "smooth"
+            });
+        }
+
+        // (B) SHOW/HIDE BUTTON
+        function togtop() {
+            if (window.scrollY >= 100) {
+                document.getElementById("backtop").classList.add("show");
+            } else {
+                document.getElementById("backtop").classList.remove("show");
+            }
+        }
+        window.addEventListener("scroll", togtop);
+        window.addEventListener("resize", togtop);
+    </script>
+    <style>
+        input {
+            font-size: 14pt;
+        }
+
+        select {
+            font-size: 18pt;
+        }
+
+        textarea {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+
+            width: 100%;
+        }
+
+        .textInput {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+
+            width: 100%;
+        }
+
+        #backtop {
+            /* (A) BOTTOM RIGHT CORNER */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+
+            /* (B) HIDDEN BY DEFAULT */
+            visibility: none;
+            opacity: 0;
+
+            /* (C) COSMETICS */
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        /* (D) SHOW BUTTON */
+        #backtop.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* (X) DOES NOT MATTER */
+        * {
+            font-family: arial, sans-serif;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body ng-app="myApp" style="font-family: arial;" style="word-wrap: break-word;">
+    <h1>U68D Local Tools</h1>
+    <fieldset>
+        <h2>Contents</h2>
+        <ul>
+            <li><a href="#YT-DLP_GUI">YT-DLP GUI</a></li>
+            <li><a href="#LoopMP4">Loop MP4</a></li>
+            <li><a href="#AppendRename">Append Rename</a></li>
+            <li><a href="#BatchChangeFileExtension">Batch Change File Extension</a></li>
+            <li><a href="#ChangeCase">Change Letter Case</a></li>
+        </ul>
+    </fieldset>
+    <br>
+    <fieldset id="YT-DLP_GUI">
+        <form action="/YT-DLP_GUI" method="POST">
+            <h2>YT-DLP GUI</h2>
+
+            <p>
+                Enter all channel, playlist and video links separated by a <b>line break</b> below.
+                <textarea class="textInput" name="URLs" rows="20"></textarea>
+            </p>
+
+            <h3>Select Media to Convert</h3>
+
+            <input type="checkbox" name="Video" id="Video">
+            <label for="Video">Video (.mp4)</label>
+            <br>
+            <input type="checkbox" name="Audio" id="Audio">
+            <label for="Audio">Audio (.mp3)</label>
+            <br>
+            <input type="checkbox" name="Thumbnail" id="Thumbnail">
+            <label for="Thumbnail">Thumbnail (.png)</label>
+            <br>
+            <input type="checkbox" name="Subtitles" id="Subtitles">
+            <label for="Subtitles">Subtitles (.vtt)</label>
+
+            <h3>Set Video Resolution</h3>
+
+            <p><b>NOTE: </b>The below dropdown will be ignored if <i>Video</i> isn't selected.</p>
+
+            <select name="VideoResolution">
+                <option value="1080">1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+                <option value="360">360p</option>
+                <option value="240">240p</option>
+                <option value="144">144p</option>
+            </select>
+
+            <h3>Misc. Settings</h3>
+
+            <input type="checkbox" name="Channel" id="Channel">
+            <label for="Channel">Include Channel Name in File</label>
+
+            <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
+
+            <hr>
+
+            <h3>Audio + Image to MP4</h3>
+
+        </form>
+
+        <form action="/AudioAndImageToMP4" method="GET">
+            <p><b>NOTE: </b>Make sure you have python & moviepy installed before using this feature!</p>
+
+            <p>If you would like to combine a video's thumbnail with its audio, click the button below to generate a powershell script with the name <b>~Audio+ImageToVid.ps1</b>.</p>
+                
+            <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
+
+            <p>After generating the script, run it to combine all png & mp3 files with the same name into an mp4 file.</p>
+        </form>
+    </fieldset>
+    <br>
+    <fieldset id="LoopMP4">
+        <form action="/LoopMP4" method="POST">
+            <h2>Loop MP4</h2>
+
+            <p>
+                Enter the total number of times you would like the video to play in the video.
+                <br><input type="number" id="NumLoops" name="NumLoops" min="2">
+            </p>
+
+            <p>A looped copy of all MP4 files will be generated in the <b>~loopMP4</b> folder.</p>
+
+            <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
+            <p>After generating the script, run it to generate all of the looped mp4 files.</p>
+        </form>
+    </fieldset>
+
+    <br>
+    <fieldset id="AppendRename">
+        <form action="/AppendRename" method="POST">
+            <h2>Append Rename Files</h2>
+            
+            <p>
+                Enter the <b>absolute</b> path(s) of the folder(s) separated by a <b>line break</b> below:
+                <textarea class="textInput" name="FolderPaths" rows="5"></textarea>
+            </p>
+
+            <p>
+                Enter the string you would like to append below:
+                <input class="textInput" name="StringToAppend">
+            </p>
+
+            <p>
+                <input type="checkbox" id="IncludeSubfoldersAppend" name="IncludeSubfolders">
+                <label for="IncludeSubfoldersAppend">Include Subfolders?</label>
+            </p>
+
+            <p><b>NOTE: </b>If a file already starts with the appended string, then it will <i>not</i> be renamed. Hopefully, this will help you keep your naming conventions clean.</p>
+
+            <input style="font-size: 18pt" type="submit" value="Rename Files">
+        </form>
+    </fieldset>
+    <br>
+    <fieldset id="BatchChangeFileExtension">
+        <form action="/BatchChangeFileExtension" method="POST">
+            <h2>Batch Change File Extension</h2>
+
+            <p><b>NOTE: </b>DO NOT include the dot when entering file extensions.</p>
+
+            <p>
+                Enter the <b>absolute</b> path(s) of the folder(s) separated by a <b>line break</b> below:
+                <textarea class="textInput" name="FolderPaths" rows="5"></textarea>
+            </p>
+
+            <p>
+                Enter each existing file extension(s) you would like to update separated by a <b>line break</b> below:
+                <textarea class="textInput" name="InputExtensions" rows="5"></textarea>
+            </p>
+
+            <p>
+                Enter the resulting file extension you would like to convert the files to below:
+                <input class="textInput" name="OutputExtension">
+            </p>
+
+            <p>
+                <input type="checkbox" id="IncludeSubfoldersFileExt" name="IncludeSubfolders">
+                <label for="IncludeSubfoldersFileExt">Include Subfolders?</label>
+            </p>
+
+            <input style="font-size: 18pt" type="submit" value="Rename Files">
+        </form>
+    </fieldset>
+    <br>
+    <fieldset id="ChangeCase">
+        <form action="/ChangeCase" method="POST">
+            <h2>Change Letter Case</h2>
+            <h3>Enter Text</h3><textarea name="TextToChange" rows="5" ng-model="textToChange"></textarea>
+            <h3>Upper Case</h3>
+            <p>{{textToChange.toUpperCase()}}</p>
+            <h3>Lower Case</h3>
+            <p>{{textToChange.toLowerCase()}}</p>
+            <input style="font-size: 18pt" type="submit" name="SelectedOperation" value="Invert Case">
+            <input style="font-size: 18pt" type="submit" name="SelectedOperation" value="Randomize Case">
+        </form>
+    </fieldset>
+    <img src="../images/up-button.png" id="backtop" onclick="totop()" />
+</body>
+
+</html>
