@@ -100,7 +100,7 @@ A visual interface that allows you to append text to the beginning of a file in 
 
 A visual interface that allows you to loop MP4 files any number of times.
 
-**NOTE:** All MP4 files must be copied to the **~loopMP4** folder before running the script.
+**NOTE:** All MP4 files must be copied to the **~loopMP4** folder before running the script, as it only reads files from there.
 
 ## Batch Change File Extension
 
