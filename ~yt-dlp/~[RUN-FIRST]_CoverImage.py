@@ -44,7 +44,9 @@ if errorWritingLine:
     print("The following mp3 files have invalid characters in them. Use the PowerRename utility to rename them and execute again. Otherwise, the cover art for some mp3 files will not be added to them automatically.\n")
     for fileName in failedFileLines:
         print(fileName)
-    print()
-
+else:
+    print("No invalid characters found! You can run the script safely. :)")
+    
+print()
 input("Run '" + outputFileName +
       "' to add the images to the mp3 covers. Press ENTER to close.\n")
