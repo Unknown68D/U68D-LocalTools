@@ -14,5 +14,12 @@
 /~yt-dlp/*.webm
 /~yt-dlp/*.webp
 /~yt-dlp/*.zip
+/~yt-dlp/*.json
 /~loopMP4/*.mp4
 /~loopMP4/*.ps1
+/~loopMP4/*.ps1
+/~mp4ToGif/*.mp4
+/~mp4ToGif/*.ps1
+/~mp4ToGif/*.gif
+/~reverseMP4/*.mp4
+/~reverseMP4/*.ps1

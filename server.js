@@ -14,6 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 const finalLine = `\necho 'COMPLETE!'`
 const YTDLP_Path = `~yt-dlp`
 const LoopMP4_Path = `~loopMP4`
+const ReverseMP4_Path = `~reverseMP4`
+const MP4toGIF_Path = `~mp4ToGif`
 //--END OF VARIABLE INITIALIZATIONS--//
 
 //--BEGINNING OF HELPER FUNCTIONS--//
@@ -22,7 +24,7 @@ const LoopMP4_Path = `~loopMP4`
 
 function makeDir(dirPath) { if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath) }
 
-const dirPathsToMake = [`~loopMP4`]
+const dirPathsToMake = [`~loopMP4`, `~mp4ToGif`]
 for (dirPath of dirPathsToMake) makeDir(dirPath)
 
 function scriptSuccessMessage(path, fileName) {
@@ -71,10 +73,11 @@ function writeFileToServer(contents, filePath) {
     return filePath
 }
 
-function ytdlpHelper(Thumbnail, Subtitles) {
+function ytdlpHelper(Thumbnail, Subtitles, Comments) {
     let str = ``
     if (Thumbnail) str += `--write-thumbnail --convert-thumbnails png `
     if (Subtitles) str += `--write-subs --sub-langs 'en.*,ja' `
+    if (Comments) str += `--write-comments `
     return str
 }
 
@@ -95,6 +98,7 @@ app.route(`/YT-DLP_GUI`)
         let Audio = req.body.Audio
         let Thumbnail = req.body.Thumbnail
         let Subtitles = req.body.Subtitles
+        let Comments = req.body.Comments
 
         let VidRes = req.body.VideoResolution
 
@@ -112,17 +116,17 @@ app.route(`/YT-DLP_GUI`)
 
             for (URL of URLs) {
                 if (Video) {
-                    commandStr += `${baseStr} '${URL}' -f bestvideo[height=${VidRes}][ext=mp4]+bestaudio/best[height=${VidRes}]/best[ext=mp4]/best --embed-chapters --remux-video mp4 ${ytdlpHelper(Thumbnail, Subtitles)}\n `
+                    commandStr += `${baseStr} '${URL}' -f bestvideo[height=${VidRes}][ext=mp4]+bestaudio/best[height=${VidRes}]/best[ext=mp4]/best --embed-chapters --remux-video mp4 ${ytdlpHelper(Thumbnail, Subtitles, Comments)}\n `
                 }
 
                 if (Audio) {
                     commandStr += `${baseStr} '${URL}' -x --audio-format mp3 `
-                    if (!Video) commandStr += `${ytdlpHelper(Thumbnail, Subtitles)} `
+                    if (!Video) commandStr += `${ytdlpHelper(Thumbnail, Subtitles, Comments)} `
                     commandStr += `\n`
                 }
 
                 if (!(Video || Audio)) {
-                    commandStr += `${baseStr} '${URL}' ${ytdlpHelper(Thumbnail, Subtitles)} --max-filesize 0.001k\n`
+                    commandStr += `${baseStr} '${URL}' ${ytdlpHelper(Thumbnail, Subtitles, Comments)} --max-filesize 0.001k\n`
                 }
             }
 
@@ -132,11 +136,11 @@ app.route(`/YT-DLP_GUI`)
         }
     })
 
-    app.route(`/AudioAndImageToMP4`)
+app.route(`/AudioAndImageToMP4`)
     .get((req, res) => {
-        let items = fs.readdirSync(`~yt-dlp`)
+        let items = fs.readdirSync(YTDLP_Path)
         let commandStr = ``
-        
+
         for (item of items) {
             if (item.endsWith(`.mp3`)) {
                 mp3Item = item
@@ -153,27 +157,61 @@ app.route(`/YT-DLP_GUI`)
         res.send(scriptSuccessMessage(YTDLP_Path, fileName))
     })
 
-    app.route(`/LoopMP4`)
+app.route(`/LoopMP4`)
     .post((req, res) => {
         let numLoops = req.body.NumLoops
         let commandStr = ``
 
         if (!numLoops) res.sendStatus(204)
         else {
-            let folderItems = fs.readdirSync(`~loopMP4`)
+            let folderItems = fs.readdirSync(LoopMP4_Path)
             for (item of folderItems) {
                 if (item.endsWith(`.mp4`)) {
                     commandStr += `ffmpeg -stream_loop ${numLoops} -i "${item}" -c copy "${item.replaceAll(`.mp4`, ``)} (${numLoops} Loops).mp4"\n`
                 }
             }
-            
+
             const fileName = `~LoopMP4.ps1`
             writeFileToServer(`${commandStr}${finalLine}`, `${LoopMP4_Path}/${fileName}`)
             res.send(scriptSuccessMessage(LoopMP4_Path, fileName))
         }
     })
 
-    app.route(`/AppendRename`)
+app.route(`/MP4toGIF`)
+    .get((req, res) => {
+        //ffmpeg -i video.mp4 video.gif
+
+        let commandStr = ``
+        let folderItems = fs.readdirSync(MP4toGIF_Path)
+        for (item of folderItems) {
+            if (item.endsWith(`.mp4`)) {
+                commandStr += `ffmpeg -i "${item}" "${item.replaceAll(`.mp4`, `.gif`)}"\n`
+            }
+        }
+
+        const fileName = `~MP4toGIF.ps1`
+        writeFileToServer(`${commandStr}${finalLine}`, `${MP4toGIF_Path}/${fileName}`)
+        res.send(scriptSuccessMessage(MP4toGIF_Path, fileName))
+    })
+
+app.route(`/ReverseMP4`)
+    .get((req, res) => {
+        //ffmpeg -i my-video.mp4 -vf reverse my-video.mp4
+
+        let commandStr = ``
+        let folderItems = fs.readdirSync(ReverseMP4_Path)
+        for (item of folderItems) {
+            if (item.endsWith(`.mp4`)) {
+                commandStr += `ffmpeg -i "${item}" -vf reverse "${item}-REVERSED.mp4"\n`
+            }
+        }
+
+        const fileName = `~ReverseMP4.ps1`
+        writeFileToServer(`${commandStr}${finalLine}`, `${ReverseMP4_Path}/${fileName}`)
+        res.send(scriptSuccessMessage(ReverseMP4_Path, fileName))
+    })
+
+app.route(`/AppendRename`)
     .post((req, res) => {
         let FolderPaths = req.body.FolderPaths
         let StringToAppend = req.body.StringToAppend
@@ -201,7 +239,7 @@ app.route(`/YT-DLP_GUI`)
         }
     })
 
-    app.route(`/BatchChangeFileExtension`)
+app.route(`/BatchChangeFileExtension`)
     .post((req, res) => {
         let FolderPaths = req.body.FolderPaths
         let InputExtensions = req.body.InputExtensions

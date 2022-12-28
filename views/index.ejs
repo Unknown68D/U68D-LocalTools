@@ -94,6 +94,8 @@
         <ul>
             <li><a href="#YT-DLP_GUI">YT-DLP GUI</a></li>
             <li><a href="#LoopMP4">Loop MP4</a></li>
+            <li><a href="#MP4toGIF">MP4 to GIF</a></li>
+            <li><a href="#ReverseMP4">Reverse MP4</a></li>
             <li><a href="#AppendRename">Append Rename</a></li>
             <li><a href="#BatchChangeFileExtension">Batch Change File Extension</a></li>
             <li><a href="#ChangeCase">Change Letter Case</a></li>
@@ -109,7 +111,7 @@
                 <textarea class="textInput" name="URLs" rows="20"></textarea>
             </p>
 
-            <h3>Select Media to Convert</h3>
+            <h3>Select Content to Download</h3>
 
             <input type="checkbox" name="Video" id="Video">
             <label for="Video">Video (.mp4)</label>
@@ -122,6 +124,9 @@
             <br>
             <input type="checkbox" name="Subtitles" id="Subtitles">
             <label for="Subtitles">Subtitles (.vtt)</label>
+            <br>
+            <input type="checkbox" name="Comments" id="Comments">
+            <label for="Comments">Comments (.json)</label>
 
             <h3>Set Video Resolution</h3>
 
@@ -152,11 +157,13 @@
         <form action="/AudioAndImageToMP4" method="GET">
             <p><b>NOTE: </b>Make sure you have python & moviepy installed before using this feature!</p>
 
-            <p>If you would like to combine a video's thumbnail with its audio, click the button below to generate a powershell script with the name <b>~Audio+ImageToVid.ps1</b>.</p>
-                
+            <p>If you would like to combine a video's thumbnail with its audio, click the button below to generate a
+                powershell script with the name <b>~Audio+ImageToVid.ps1</b>.</p>
+
             <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
 
-            <p>After generating the script, run it to combine all png & mp3 files with the same name into an mp4 file.</p>
+            <p>After generating the script, run it to combine all png & mp3 files with the same name into an mp4 file.
+            </p>
         </form>
     </fieldset>
     <br>
@@ -169,18 +176,48 @@
                 <br><input type="number" id="NumLoops" name="NumLoops" min="2">
             </p>
 
-            <p>A looped copy of all MP4 files will be generated in the <b>~loopMP4</b> folder.</p>
+            <p>
+                Generate the script <b>AFTER</b> placing the MP4 files in the <b>~loopMP4</b> folder.
+                A looped copy of all MP4 files will be generated here.
+            </p>
 
             <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
             <p>After generating the script, run it to generate all of the looped mp4 files.</p>
         </form>
     </fieldset>
+    <br>
+    <fieldset id="MP4toGIF">
+        <form action="/MP4toGIF" method="GET">
+            <h2>MP4 to GIF</h2>
 
+            <p>
+                Generate the script <b>AFTER</b> placing the MP4 files in the <b>~MP4toGIF</b> folder.
+                All GIFs will be generated here.
+            </p>
+
+            <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
+            <p>After generating the script, run it to generate the GIFs.</p>
+        </form>
+    </fieldset>
+    <br>
+    <fieldset id="ReverseMP4">
+        <form action="/ReverseMP4" method="GET">
+            <h2>Reverse MP4</h2>
+
+            <p>
+                Generate the script <b>AFTER</b> placing the MP4 files in the <b>~MP4toGIF</b> folder.
+                All GIFs will be generated here.
+            </p>
+
+            <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
+            <p>After generating the script, run it to generate the GIFs.</p>
+        </form>
+    </fieldset>
     <br>
     <fieldset id="AppendRename">
         <form action="/AppendRename" method="POST">
             <h2>Append Rename Files</h2>
-            
+
             <p>
                 Enter the <b>absolute</b> path(s) of the folder(s) separated by a <b>line break</b> below:
                 <textarea class="textInput" name="FolderPaths" rows="5"></textarea>
@@ -196,7 +233,8 @@
                 <label for="IncludeSubfoldersAppend">Include Subfolders?</label>
             </p>
 
-            <p><b>NOTE: </b>If a file already starts with the appended string, then it will <i>not</i> be renamed. Hopefully, this will help you keep your naming conventions clean.</p>
+            <p><b>NOTE: </b>If a file already starts with the appended string, then it will <i>not</i> be renamed.
+                Hopefully, this will help you keep your naming conventions clean.</p>
 
             <input style="font-size: 18pt" type="submit" value="Rename Files">
         </form>
