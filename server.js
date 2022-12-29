@@ -215,7 +215,7 @@ app.route(`/ReverseVid`)
             }
         }
 
-        const fileName = `~ReverseMP4.ps1`
+        const fileName = `~ReverseVid.ps1`
         writeFileToServer(`${commandStr}${finalLine}`, `${ReverseVid_Path}/${fileName}`)
         res.send(scriptSuccessMessage(ReverseVid_Path, fileName))
     })
