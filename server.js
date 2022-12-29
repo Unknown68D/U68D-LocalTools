@@ -11,11 +11,14 @@ app.use(express.urlencoded({ extended: true }));
 //--END OF APP INITIALIZATIONS--//
 
 //--BEGINNING OF VARIABLE INITIALIZATIONS--//
+
 const finalLine = `\necho 'COMPLETE!'`
 const YTDLP_Path = `~yt-dlp`
-const LoopMP4_Path = `~loopMP4`
-const ReverseMP4_Path = `~reverseMP4`
-const MP4toGIF_Path = `~mp4ToGif`
+const LoopVideo_Path = `~loopVideo`
+const ReverseVid_Path = `~reverseVid`
+const VidToGIF_Path = `~vidToGif`
+const ReduceMedia_Path = `~reduceMediaDimensions`
+
 //--END OF VARIABLE INITIALIZATIONS--//
 
 //--BEGINNING OF HELPER FUNCTIONS--//
@@ -24,7 +27,7 @@ const MP4toGIF_Path = `~mp4ToGif`
 
 function makeDir(dirPath) { if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath) }
 
-const dirPathsToMake = [`~loopMP4`, `~mp4ToGif`]
+const dirPathsToMake = [LoopVideo_Path, ReverseVid_Path, VidToGIF_Path, ReduceMedia_Path]
 for (dirPath of dirPathsToMake) makeDir(dirPath)
 
 function scriptSuccessMessage(path, fileName) {
@@ -87,7 +90,13 @@ function ytdlpHelper(Thumbnail, Subtitles, Comments) {
 
 app.route(`/`)
     .get((req, res) => {
-        res.render(`index`)
+        res.render(`index`, {
+            YTDLP_Path : YTDLP_Path,
+            LoopVideo_Path : LoopVideo_Path,
+            ReverseVid_Path : ReverseVid_Path,
+            VidToGIF_Path : VidToGIF_Path,
+            ReduceMedia_Path : ReduceMedia_Path
+        })
     })
 
 app.route(`/YT-DLP_GUI`)
@@ -157,58 +166,82 @@ app.route(`/AudioAndImageToMP4`)
         res.send(scriptSuccessMessage(YTDLP_Path, fileName))
     })
 
-app.route(`/LoopMP4`)
+app.route(`/LoopVideo`)
     .post((req, res) => {
         let numLoops = req.body.NumLoops
         let commandStr = ``
 
         if (!numLoops) res.sendStatus(204)
         else {
-            let folderItems = fs.readdirSync(LoopMP4_Path)
+            let folderItems = fs.readdirSync(LoopVideo_Path)
             for (item of folderItems) {
-                if (item.endsWith(`.mp4`)) {
-                    commandStr += `ffmpeg -stream_loop ${numLoops} -i "${item}" -c copy "${item.replaceAll(`.mp4`, ``)} (${numLoops} Loops).mp4"\n`
-                }
+                let lastIndexOfDot = item.lastIndexOf(`.`)
+                let itemName = item.slice(0, lastIndexOfDot)
+                let itemExt = item.slice(lastIndexOfDot)
+
+                commandStr += `ffmpeg -stream_loop ${numLoops} -i "${item}" -c copy "${itemName} (${numLoops} Loops)${itemExt}"\n`
             }
 
-            const fileName = `~LoopMP4.ps1`
-            writeFileToServer(`${commandStr}${finalLine}`, `${LoopMP4_Path}/${fileName}`)
-            res.send(scriptSuccessMessage(LoopMP4_Path, fileName))
+            const fileName = `~LoopVideo.ps1`
+            writeFileToServer(`${commandStr}${finalLine}`, `${LoopVideo_Path}/${fileName}`)
+            res.send(scriptSuccessMessage(LoopVideo_Path, fileName))
         }
     })
 
-app.route(`/MP4toGIF`)
+app.route(`/VidToGIF`)
     .get((req, res) => {
-        //ffmpeg -i video.mp4 video.gif
-
         let commandStr = ``
-        let folderItems = fs.readdirSync(MP4toGIF_Path)
+        let folderItems = fs.readdirSync(VidToGIF_Path)
         for (item of folderItems) {
-            if (item.endsWith(`.mp4`)) {
-                commandStr += `ffmpeg -i "${item}" "${item.replaceAll(`.mp4`, `.gif`)}"\n`
-            }
+            let lastIndexOfDot = item.lastIndexOf(`.`)
+            let itemName = item.slice(0, lastIndexOfDot)
+            //let itemExt = item.slice(lastIndexOfDot)
+            
+            commandStr += `ffmpeg -i "${item}" "${itemName}.gif"\n`
         }
 
-        const fileName = `~MP4toGIF.ps1`
-        writeFileToServer(`${commandStr}${finalLine}`, `${MP4toGIF_Path}/${fileName}`)
-        res.send(scriptSuccessMessage(MP4toGIF_Path, fileName))
+        const fileName = `~VidToGIF.ps1`
+        writeFileToServer(`${commandStr}${finalLine}`, `${VidToGIF_Path}/${fileName}`)
+        res.send(scriptSuccessMessage(VidToGIF_Path, fileName))
     })
 
-app.route(`/ReverseMP4`)
+app.route(`/ReverseVid`)
     .get((req, res) => {
-        //ffmpeg -i my-video.mp4 -vf reverse my-video.mp4
-
         let commandStr = ``
-        let folderItems = fs.readdirSync(ReverseMP4_Path)
+        let folderItems = fs.readdirSync(ReverseVid_Path)
         for (item of folderItems) {
             if (item.endsWith(`.mp4`)) {
-                commandStr += `ffmpeg -i "${item}" -vf reverse "${item}-REVERSED.mp4"\n`
+                commandStr += `ffmpeg -i "${item}" -vf reverse "${item} (Reversed).mp4"\n`
             }
         }
 
         const fileName = `~ReverseMP4.ps1`
-        writeFileToServer(`${commandStr}${finalLine}`, `${ReverseMP4_Path}/${fileName}`)
-        res.send(scriptSuccessMessage(ReverseMP4_Path, fileName))
+        writeFileToServer(`${commandStr}${finalLine}`, `${ReverseVid_Path}/${fileName}`)
+        res.send(scriptSuccessMessage(ReverseVid_Path, fileName))
+    })
+
+app.route(`/ReduceMediaDimensions`)
+    //ffmpeg -i video_1920.mp4 -vf scale=640:360 video_640.mp4 -hide_banner
+    .post((req, res) => {
+        let Dimensions = req.body.Dimensions.split(`:`)
+        let width = Dimensions[0]
+        let height = Dimensions[1]
+
+        let commandStr = ``
+        let folderItems = fs.readdirSync(ReduceMedia_Path)
+        for (item of folderItems) {
+            let lastIndexOfDot = item.lastIndexOf(`.`)
+            let itemName = item.slice(0, lastIndexOfDot)
+            let itemExt = item.slice(lastIndexOfDot)
+
+            if (!item.endsWith(`.ps1`)) {
+                commandStr += `ffmpeg -i "${item}" -vf scale=${width}:${height} "${itemName} (${width} by ${height})${itemExt}" -hide_banner\n`
+            }
+        }
+
+        const fileName = `~ReduceMediaDimensions.ps1`
+        writeFileToServer(`${commandStr}${finalLine}`, `${ReduceMedia_Path}/${fileName}`)
+        res.send(scriptSuccessMessage(ReduceMedia_Path, fileName))
     })
 
 app.route(`/AppendRename`)
