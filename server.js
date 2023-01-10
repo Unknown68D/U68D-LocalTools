@@ -14,10 +14,11 @@ app.use(express.urlencoded({ extended: true }));
 
 const finalLine = `\necho 'COMPLETE!'`
 const YTDLP_Path = `~yt-dlp`
-const LoopVideo_Path = `~loopVideo`
-const ReverseVid_Path = `~reverseVid`
+const LoopMedia_Path = `~loopMedia`
+const ReverseMedia_Path = `~reverseMedia`
 const VidToGIF_Path = `~vidToGif`
 const ReduceMedia_Path = `~reduceMediaDimensions`
+const ExtractAudio_Path = `~extractAudio`
 
 //--END OF VARIABLE INITIALIZATIONS--//
 
@@ -27,7 +28,7 @@ const ReduceMedia_Path = `~reduceMediaDimensions`
 
 function makeDir(dirPath) { if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath) }
 
-const dirPathsToMake = [LoopVideo_Path, ReverseVid_Path, VidToGIF_Path, ReduceMedia_Path]
+const dirPathsToMake = [LoopMedia_Path, ReverseMedia_Path, VidToGIF_Path, ReduceMedia_Path, ExtractAudio_Path]
 for (dirPath of dirPathsToMake) makeDir(dirPath)
 
 function scriptSuccessMessage(path, fileName) {
@@ -92,10 +93,11 @@ app.route(`/`)
     .get((req, res) => {
         res.render(`index`, {
             YTDLP_Path : YTDLP_Path,
-            LoopVideo_Path : LoopVideo_Path,
-            ReverseVid_Path : ReverseVid_Path,
+            LoopMedia_Path : LoopMedia_Path,
+            ReverseMedia_Path : ReverseMedia_Path,
             VidToGIF_Path : VidToGIF_Path,
-            ReduceMedia_Path : ReduceMedia_Path
+            ReduceMedia_Path : ReduceMedia_Path,
+            ExtractAudio_Path : ExtractAudio_Path
         })
     })
 
@@ -110,6 +112,7 @@ app.route(`/YT-DLP_GUI`)
         let Comments = req.body.Comments
 
         let VidRes = req.body.VideoResolution
+        let FrameRate = req.body.FrameRate
 
         let Channel = req.body.Channel
 
@@ -125,7 +128,7 @@ app.route(`/YT-DLP_GUI`)
 
             for (URL of URLs) {
                 if (Video) {
-                    commandStr += `${baseStr} '${URL}' -f bestvideo[height=${VidRes}][ext=mp4]+bestaudio/best[height=${VidRes}]/best[ext=mp4]/best --embed-chapters --remux-video mp4 ${ytdlpHelper(Thumbnail, Subtitles, Comments)}\n `
+                    commandStr += `${baseStr} '${URL}' -f bestvideo[height=${VidRes}][ext=mp4][fps=${FrameRate}]+bestaudio/best[height=${VidRes}]/best[ext=mp4]/best --embed-chapters --remux-video mp4 ${ytdlpHelper(Thumbnail, Subtitles, Comments)}\n `
                 }
 
                 if (Audio) {
@@ -166,14 +169,15 @@ app.route(`/AudioAndImageToMP4`)
         res.send(scriptSuccessMessage(YTDLP_Path, fileName))
     })
 
-app.route(`/LoopVideo`)
+app.route(`/LoopMedia`)
+//app.route(`LoopMedia`)
     .post((req, res) => {
         let numLoops = req.body.NumLoops
         let commandStr = ``
 
         if (!numLoops) res.sendStatus(204)
         else {
-            let folderItems = fs.readdirSync(LoopVideo_Path)
+            let folderItems = fs.readdirSync(LoopMedia_Path)
             for (item of folderItems) {
                 let lastIndexOfDot = item.lastIndexOf(`.`)
                 let itemName = item.slice(0, lastIndexOfDot)
@@ -182,9 +186,9 @@ app.route(`/LoopVideo`)
                 commandStr += `ffmpeg -stream_loop ${numLoops} -i "${item}" -c copy "${itemName} (${numLoops} Loops)${itemExt}"\n`
             }
 
-            const fileName = `~LoopVideo.ps1`
-            writeFileToServer(`${commandStr}${finalLine}`, `${LoopVideo_Path}/${fileName}`)
-            res.send(scriptSuccessMessage(LoopVideo_Path, fileName))
+            const fileName = `~LoopMedia.ps1`
+            writeFileToServer(`${commandStr}${finalLine}`, `${LoopMedia_Path}/${fileName}`)
+            res.send(scriptSuccessMessage(LoopMedia_Path, fileName))
         }
     })
 
@@ -205,19 +209,38 @@ app.route(`/VidToGIF`)
         res.send(scriptSuccessMessage(VidToGIF_Path, fileName))
     })
 
-app.route(`/ReverseVid`)
+app.route(`/ReverseMedia`)
     .get((req, res) => {
         let commandStr = ``
-        let folderItems = fs.readdirSync(ReverseVid_Path)
+        let folderItems = fs.readdirSync(ReverseMedia_Path)
         for (item of folderItems) {
-            if (item.endsWith(`.mp4`)) {
-                commandStr += `ffmpeg -i "${item}" -vf reverse "${item} (Reversed).mp4"\n`
-            }
+            let lastIndexOfDot = item.lastIndexOf(`.`)
+            let itemName = item.slice(0, lastIndexOfDot)
+            let itemExt = item.slice(lastIndexOfDot)
+
+            commandStr += `ffmpeg -i "${item}" -vf reverse -af areverse "${itemName} (Reversed)${itemExt}"\n`
         }
 
-        const fileName = `~ReverseVid.ps1`
-        writeFileToServer(`${commandStr}${finalLine}`, `${ReverseVid_Path}/${fileName}`)
-        res.send(scriptSuccessMessage(ReverseVid_Path, fileName))
+        const fileName = `~ReverseMedia.ps1`
+        writeFileToServer(`${commandStr}${finalLine}`, `${ReverseMedia_Path}/${fileName}`)
+        res.send(scriptSuccessMessage(ReverseMedia_Path, fileName))
+    })
+
+app.route(`/ExtractAudio`)
+    .get((req, res) => {
+        //ffmpeg -i "input.mp4" -map 0:a -y "output.mp3"
+        let commandStr = ``
+        let folderItems = fs.readdirSync(ExtractAudio_Path)
+        for (item of folderItems) {
+            let lastIndexOfDot = item.lastIndexOf(`.`)
+            let itemName = item.slice(0, lastIndexOfDot)
+            
+            commandStr += `ffmpeg -i "${item}" -map 0:a -y "${itemName}.mp3"\n`
+        }
+
+        const fileName = `~ExtractAudio.ps1`
+        writeFileToServer(`${commandStr}${finalLine}`, `${ExtractAudio_Path}/${fileName}`)
+        res.send(scriptSuccessMessage(ExtractAudio_Path, fileName))
     })
 
 app.route(`/ReduceMediaDimensions`)

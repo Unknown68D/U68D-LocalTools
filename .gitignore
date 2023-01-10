@@ -12,7 +12,8 @@
 /~yt-dlp/*.webp
 /~yt-dlp/*.zip
 /~yt-dlp/*.json
-/~loopVideo
-/~vidToGif
-/~reverseVid
+/~loopMedia
+/~vidToGIF
+/~reverseMedia
 /~reduceMediaDimensions
+/~extractAudio

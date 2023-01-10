@@ -90,17 +90,35 @@ For .mp3 files, if you also downloaded that corresponding video's thumbnail, you
 1. **~\[RUN-FIRST\]_CoverImage.exe** OR **~\[RUN-FIRST\]_CoverImage.py** (Will generate the script below)
 2. **~\[RUN-SECOND\]_CoverImage.ps1** (Will add all images to all mp3 files)
 
-This is useful for mp3 players to help you identify songs. You can also use a free program like [Mp3Tag](https://www.mp3tag.de/en/index.html) to verify that the album image was added successfully.
+This is useful for mp3 players to help you identify songs. You can also use [Mp3Tag](https://www.mp3tag.de/en/index.html) to verify that the album image was added successfully for free!
 
-### Append Rename Files
+## Loop Media
+
+A visual interface that allows you to loop media files any number of times.
+
+**NOTE:** All files must be copied to the **~loopMedia** folder before running the script, as it only reads files from there.
+
+## Reverse Media
+
+A visual interface that allows you to generate a reversed version of any media file.
+
+**NOTE:** All files must be copied to the **~reverseMedia** folder before running the script, as it only reads files from there.
+
+## Extract Audio
+
+A visual interface that allows you to extract the audio from any video file.
+
+**NOTE:** All files must be copied to the **~extractAudio** folder before running the script, as it only reads files from there.
+
+## Reduce Media Dimensions
+
+A visual interface that allows you to generate reduced dimensions of media.
+
+**NOTE:** All files must be copied to the **~reduceMediaDimensions** folder before running the script, as it only reads files from there.
+
+## Append Rename Files
 
 A visual interface that allows you to append text to the beginning of a file in all folders specified. This is useful for programs where you would like to organize files based on file naming conventions. You can also include subfolders! Simply provide the folders to check and the text to append, then click 'Rename Files' to rename them all.
-
-## Loop MP4
-
-A visual interface that allows you to loop MP4 files any number of times.
-
-**NOTE:** All MP4 files must be copied to the **~loopMP4** folder before running the script, as it only reads files from there.
 
 ## Batch Change File Extension
 

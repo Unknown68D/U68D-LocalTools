@@ -93,9 +93,10 @@
         <h2>Contents</h2>
         <ul>
             <li><a href="#YT-DLP_GUI">YT-DLP GUI</a></li>
-            <li><a href="#LoopVideo">Loop Video</a></li>
+            <li><a href="#LoopMedia">Loop Media</a></li>
             <li><a href="#VidToGIF">Video to GIF</a></li>
-            <li><a href="#ReverseVid">Reverse Video</a></li>
+            <li><a href="#ReverseMedia">Reverse Media</a></li>
+            <li><a href="#ExtractAudio">Extract Audio</a></li>
             <li><a href="#ReduceMediaDimensions">Reduce Media Dimensions</a></li>
             <li><a href="#AppendRename">Append Rename Files</a></li>
             <li><a href="#BatchChangeFileExtension">Batch Change File Extension</a></li>
@@ -142,6 +143,18 @@
                 <option value="144">144p</option>
             </select>
 
+            <h3>Set FPS</h3>
+
+            <p><b>NOTE: </b> Ensure that the resolution and framerate entered match the video. Otherwise, you may download a video at a lower framerate than desired.</p>
+
+            <select name="FrameRate">
+                <option value="60">60 fps</option>
+                <option value="50">50 fps</option>
+                <option value="48">48 fps</option>
+                <option value="30">30 fps</option>
+                <option value="24">24 fps</option>
+            </select>
+
             <h3>Misc. Settings</h3>
 
             <input type="checkbox" name="Channel" id="Channel">
@@ -168,22 +181,22 @@
         </form>
     </fieldset>
     <br>
-    <fieldset id="LoopVideo">
-        <form action="/LoopVideo" method="POST">
-            <h2>Loop Video</h2>
+    <fieldset id="LoopMedia">
+        <form action="/LoopMedia" method="POST">
+            <h2>Loop Media</h2>
 
             <p>
-                Enter the total number of times you would like the video to play in the video.
+                Enter the total number of times you would like the media to be looped.
                 <br><input type="number" id="NumLoops" name="NumLoops" min="2">
             </p>
 
             <p>
-                Generate the script <b>AFTER</b> placing the video files in the <b><%=LoopVideo_Path%></b> folder.
+                Generate the script <b>AFTER</b> placing the video files in the <b><%=LoopMedia_Path%></b> folder.
                 A looped copy of all video files will be generated here.
             </p>
 
             <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
-            <p>After generating the script, run it to generate all of the looped video files.</p>
+            <p>After generating the script, run it to generate all of the looped media files.</p>
         </form>
     </fieldset>
     <br>
@@ -201,17 +214,31 @@
         </form>
     </fieldset>
     <br>
-    <fieldset id="ReverseVid">
-        <form action="/ReverseVid" method="GET">
-            <h2>Reverse Video</h2>
+    <fieldset id="ReverseMedia">
+        <form action="/ReverseMedia" method="GET">
+            <h2>Reverse Media</h2>
 
             <p>
-                Generate the script <b>AFTER</b> placing the video files in the <b><%=ReverseVid_Path%></b> folder.
+                Generate the script <b>AFTER</b> placing the media files in the <b><%=ReverseMedia_Path%></b> folder.
                 All GIFs will be generated here.
             </p>
 
             <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
-            <p>After generating the script, run it to generate the GIFs.</p>
+            <p>After generating the script, run it to generate the reversed media.</p>
+        </form>
+    </fieldset>
+    <br>
+    <fieldset id="ExtractAudio">
+        <form action="/ExtractAudio">
+            <h2>Extract Audio</h2>
+
+            <p>
+                Generate the script <b>AFTER</b> placing the video files in the <b><%=ExtractAudio_Path%></b> folder.
+                All MP3 files will be generated here.
+            </p>
+
+            <p><input style="font-size: 18pt" type="submit" value="Generate Script"></p>
+            <p>After generating the script, run it to generate the MP3 files.</p>
         </form>
     </fieldset>
     <br>
